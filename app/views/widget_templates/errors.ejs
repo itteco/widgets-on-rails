@@ -1,0 +1,13 @@
+<% if (typeof(errors) != 'undefined') { %>
+    <% if (typeof(errors.HEADER) != 'undefined') { %><div class='title'><%= errors.HEADER %></div><% } %>
+    <ul>
+    <% for (field in errors) { %>
+        <% if (field != 'HEADER') { %>
+            <% for (var i=0; i < errors[field].length && (e = errors[field][i]); i++) { %>
+                <li><%= e %></li>
+            <% } %>
+        <% } %>
+    <% } %>
+    </ul>    
+
+<% } %>

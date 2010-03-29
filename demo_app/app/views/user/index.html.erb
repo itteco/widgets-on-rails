@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Site root</title>
+  </head>
+  <body>
+ 
+  <h3>User pages</h3>
+  <ul>
+    <% @users.each do |user| %>
+    <li><%= user %>'s <a href="/user/show/<%= user %>">page</a></li>
+    <% end %>
+  </ul>
+  </body>
+</html>

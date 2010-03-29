@@ -1,0 +1,19 @@
+<h1 class='wor-header'>Subscribe for products</h1>
+<div id='wor-content'>
+<div class='errors' id='wor-errors' style='border: solid 1px red; display: none;'></div>
+<div class='clear'></div>
+<form>
+<ul style='list-style: none; list-style-position: outside; text-indent: -20px;'>
+<% for (var i=0; i < products.length && (p = products[i]); i++) { %>
+    <li><label><input type='radio' name='product' value='<%= p.handle %>' <% if(typeof(product) != 'undefined' && product == p.handle) { %>checked='checked'<% } %> /><%=p.name %></label>
+    <br/><strong>$<%= p.price_in_cents / 100.0 %></strong>
+    <% if (p.interval == 1) { %>per <%= p.interval_unit %><% } else { %>every <%= p.interval %> <%= p.interval_unit %>s<% } %>
+    <% if(p.description) { %>
+    <br/><%= p.description %>
+    <% } %>
+    </li>
+<% } %>
+</ul>
+<input value='Continue' type='submit' />
+</form>
+</div>

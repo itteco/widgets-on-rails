@@ -1,0 +1,21 @@
+<h1 class='wor-header'>Currently subscribed to:</h1>
+<div id='wor-content'>
+<div class='errors' id='wor-errors' style='border: solid 1px red; display: none;'></div>
+<div class='clear'></div>
+
+<form>
+<ul style='list-style: none; list-style-position: outside; text-indent: -20px;'>
+<% if (subscriptions.length) {%>
+<% for (var i=0; i < subscriptions.length && (s = subscriptions[i]) && (p = s.product); i++) { %>
+    <li><i><%= s.activated_at.replace(/[A-Za-z]+/g, ' ') %></i> <%=p.name %>
+    &mdash; <strong>$<%= p.price_in_cents / 100.0 %></strong>
+    <% if (p.interval == 1) { %>per <%= p.interval_unit %><% } else { %>every <%= p.interval %> <%= p.interval_unit %>s<% } %>
+    </li>
+<% } %>
+<% } else {%>
+    <li>No subscriptions found</li>
+<% } %>
+</ul>
+<input value='Refresh' type='submit' />
+</form>
+</div>

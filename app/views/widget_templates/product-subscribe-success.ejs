@@ -1,0 +1,11 @@
+<h1 class='wor-header'>Subscribed successfully</h1>
+<div id='wor-content'>
+<form><input type='hidden' name='done' value='1' />
+<% var p = product %>
+<p>
+You have subscribed for <strong><%=p.name %></strong> for <strong>$<%= p.price_in_cents / 100.0 %></strong>
+    <% if (p.interval == 1) { %>per <%= p.interval_unit %><% } else { %>every <%= p.interval %> <%= p.interval_unit %>s<% } %>
+</p>
+<p><input value='Done' type='submit' /></p>
+</form>
+</div>

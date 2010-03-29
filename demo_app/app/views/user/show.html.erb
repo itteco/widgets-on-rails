@@ -1,0 +1,69 @@
+<%
+# Copyright (c) 2010 Itteco Software, Corp.  Artem Scorecky, Anatoly Ivanov, Alexander Lebedev.
+# 
+# WIDGETS ON RAILS -- MVC framework
+# ----------------------------------------------------------------------
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# ----------------------------------------------------------------------
+#
+# SAMPLE IMPLEMENTATION
+#
+# Simple page with WIDGETS embedded
+#
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>User #<%=@id%></title>
+<!-- WOR prerequisites -->
+  <script type='text/javascript' src="<%=APP_CONFIG['webservice_root']%>javascripts/jquery.min.js"></script>
+  <script type='text/javascript' src="<%=APP_CONFIG['webservice_root']%>javascripts/2.0.0-crypto-sha1-hmac-pbkdf2.js"></script>
+  <script type='text/javascript' src="<%=APP_CONFIG['webservice_root']%>javascripts/ejs_production.js"></script>
+<!-- /WOR prerequisites -->
+<!-- WOR loader -->
+  <script type='text/javascript'>
+  var SERVICE_URL_PREFIX = '<%= APP_CONFIG["webservice_root"] %>';
+  </script>
+  <script type='text/javascript' src="<%=APP_CONFIG['webservice_root']%>javascripts/wor.js"></script>
+  <script type='text/javascript' src="<%=APP_CONFIG['webservice_root']%>javascripts/wor-containers.js"></script>
+  <script type='text/javascript' src="<%=APP_CONFIG['webservice_root']%>templates.js"></script>
+  <link rel="stylesheet" href="<%= APP_CONFIG['webservice_root'] %>stylesheets/wor.css" />
+<!-- /WOR loader -->
+</head>
+<body bgcolor='#F6F6F6'>
+  <h2>User &ldquo;<%=@id%>&rdquo; payment page</h2>
+<!-- WOR WIDGETS placeholders -->
+  <div class="wor-container" widget="product-subscribe" position="inline"></div>
+  <div class="wor-container" widget="show-subscriptions" position="inline" css="http://static.jquery.com/api/style.css"></div>
+  <div class="wor-container" widget="show-subscriptions" position="iframe"></div>
+  <div class="wor-container" widget="product-subscribe" position="iframe" css="http://static.jquery.com/api/style.css"></div>
+  <div class="wor-container" widget="product-subscribe" position="window" text='Subscribe'></div>
+  <div class="wor-container" widget="product-subscribe" position="window" width='200' height='300' css="http://static.jquery.com/api/style.css"></div>
+<!-- /WOR WIDGETS placeholders -->
+<!-- WOR session initializer-->
+<script type="text/javascript">
+$(document).ready(function(){
+    worCreateWidgetContainers("<%= @t %>");
+    });
+</script>
+<!-- /WOR session initializer-->
+</body>
+</html>
