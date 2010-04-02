@@ -50,11 +50,11 @@ Actions sequence:
   5. CONSUMER CLIENT passes over WIDGETS placeholders and create CONTAINER for each of them.
   6. CONSUMER CLIENT for every CONTAINER requests PROVIDER for initial data signing request using TOKEN.
   7. PROVIDER validates request over TOKEN and creates initial state and return to CONSUMER CLIENT initial
-     data for WIDGET.
+     data for WIDGET plus SECRET (replacement of TOKEN for further communication).
   8. CONSUMER CLIENT renders supplied data as HTML and shows it in WIDGET.
   9. End user enters some information and submits it.
- 10. CONSUMER CLIENT signs user input using TOKEN and sends to PROVIDER.
- 11. PROVIDER checks request over TOKEN, handles user input using last state for this WIDGET and return to
+ 10. CONSUMER CLIENT signs user input using SECRET and sends to PROVIDER.
+ 11. PROVIDER checks request over SECRET, handles user input using last state for this WIDGET and return to
      CONSUMER CLIENT data for WIDGET.
  12. Steps #8-9-10-11 are repeated
 
