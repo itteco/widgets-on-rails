@@ -22,49 +22,195 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------
 
-= ABOUT =
+= Description =
 
-CONSUMER <-> PROVIDER
+Widget on Rails (later "WOR") is a framework designed using MVC pattern to add your widgets into 3rd party pages.
 
-= STRUCTURE =
+Key features of WOR:
 
-CONSUMER:
-  SERVER 
+ * All logic (MODEL and CONTROLLER) is on your server (later "PROVIDER") implemented as Ruby on Rails
+   application
+ * UI is shown (VIEW) on 3rd party page (later "CONSUMER") using Javascript included
+ * All communication between CONSUMER and PROVIDER is made inside secure session preventing data modification
+   and accessing unauthorized data
+
+WOR contains of 3 parts:
+
+ * CONSUMER SERVER - small server code (may be in any language) that initializes secure session and WOR UI
+ * CONSUMER CLIENT - Javascript libraries that sends and receives data to PROVIDER and draws UI
+ * PROVIDER [SERVER] - server application that implements processing data from COMSUMER
+
+Actions sequence:
+
+  1. End user opens page that has WIDGETS embedded.
+  2. CONSUMER SERVER connects PROVIDER providing credentials and request context (user_id, etc.).
+  3. PROVIDER validates supplied credentials, creates TOKEN and session identified by TOKEN, fill session with
+     supplied context and returns TOKEN back to CONSUMER SERVER.
+  4. CONSUMER SERVER shown end user an HTML page with WIDGETS placeholders and TOKEN emdedded.
+  5. CONSUMER CLIENT passes over WIDGETS placeholders and create CONTAINER for each of them.
+  6. CONSUMER CLIENT for every CONTAINER requests PROVIDER for initial data signing request using TOKEN.
+  7. PROVIDER validates request over TOKEN and creates initial state and return to CONSUMER CLIENT initial
+     data for WIDGET.
+  8. CONSUMER CLIENT renders supplied data as HTML and shows it in WIDGET.
+  9. End user enters some information and submits it.
+ 10. CONSUMER CLIENT signs user input using TOKEN and sends to PROVIDER.
+ 11. PROVIDER checks request over TOKEN, handles user input using last state for this WIDGET and return to
+     CONSUMER CLIENT data for WIDGET.
+ 12. Steps #8-9-10-11 are repeated
+
+Types of CONTAINERS:
+
+ * INLINE - WIDGET is placed in DIV inside placeholder. It looks seamless for end user. CORS is used to
+            communicate with PROVIDER. It doesn't work in not standards-compliant (IE) or older browsers.
+ * IFRAME - WIDGET is placed in IFRAME inside placeholder. IFRAME resizes on every content modification and
+            has no scrolling so it looks seamless for end user. IFRAME content is not calclulated correct in
+            IE so IFRAME size do not match its content. IFRAME is on PROVIDER domain, so ordinary XHR is used
+            (no need in CORS).
+ * WINDOW - link is shown inside placeholder. When user clicks the link new WINDOW appear with WIDGET inside
+            or existing WIDGET WINDOW is focused. WINDOW size is static (initial size is defined in
+            placeholder) - auto-resize needs a hack that would kill usability if WINDOW resize feature is
+            blocked (a typical case for Firefox). The window is not opened automatically because it would be
+            killed by popup blocker. 
+
+
+= PROJECT STRUCTURE =
+
+Listing of notable files (exclamation sign means the file is a sample implementation and must be changed in
+your project and asterisk mask if changes may be needed):
+
+
+    /          PROVIDER application
+    app
+        controllers
+            application_controller.rb   General controller that implements common filters
+            main_controller.rb          Controller for WIDGET creation and processing
+            session_controller.rb       Controller for session creation and processing
+        views
+            main
+                widget.html.erb         Template for HTML version of WIDGET (IFRAME or WINDOW container)
+                widget.js.erb           Template for JS version of WIDGET (INLINE container)
+                _widget.js.erb          Partial for rendering template
+            widget_templates
+                errors.ejs              EJS template for rendering errors
+    !           *.ejs                   EJS templates for WIDGETS on each step
+    config
+        initializers
+            load_wor_config.rb          Loader of PROVIDER application configuration
+        environment.rb                  Templates configuration
+        routes.rb                       Routes for PROVIDER application
+    !   widgets-on-rails.yml            Sample PROVIDER application configuration 
+    lib
+    !   chargify.rb                     Implements Chargify logic used in CONTROLLER
+    !   session_extended.rb             Implements methods for initalizing CONSUMER <-> PROVIDER session
+        utils.rb                        SHARED library for CONSUMER and PROVIDER server applications
+    !   widget_steps.rb                 Implements response to user actions (CONTROLLER component of WIDGET)
+    public
+        images
+            ajax-loader-big.gif         "loading" indicator
+        javascripts
+            2.0.0-crypto-sha1-hmac-pbkdf2.js    CONSUMER SHA1 crypto module
+            ejs_production.js           COMSUMER EJS module
+            jquery.min.js               COMSUMER jQuery module
+            wor.js                      CONSUMER WIDGET module
+            wor-containers.js           CONSUMER CONTAINER module
+        stylesheets
+    *       wor.css                     Styles for WIDGETS and its CONTAINERS
+    README                              This file
+
+    demo_app   CONSUMER application - new Rails application with few changes
+        app
+            controllers
+                user_controller.rb      Sample CONSUMER controller - with session initialization
+            views
+                user
+                    show.html.erb       Sample CONSUMER view - with WIDGETS placeholders
+        lib
+            utils.rb                    SHARED library for CONSUMER and PROVIDER server applications (link to
+                                        /lib/utils.rb)
+        config
+            initializers
+                load_app_config.rb      Loader of CONSUMER application configuration
+    !       app_config.yml              Configuration of CONSUMER application
+
 
 = TRY-OUT =
 
-Widgets-on-Rails has sample implementation (Chargify widgets) preconfigured to specific domain names.
+Widgets-on-Rails has sample implementation (widgets for Chargify) preconfigured to run on specific domain names.
 
 In order to run sample implementation:
 
-1. Add "example.com" and "example-provider.com" domains binding for your machine IP.
+ 1. Add "example.com" and "example-provider.com" domains binding for your machine IP.
 
-   on Linux open /etc/hosts
-   on Windows open c:\windows\system32\drivers\etc\hosts
+    on Linux open /etc/hosts
+    on Windows open c:\windows\system32\drivers\etc\hosts
    
-   Add following lines (without spaces in the beginning):
+    Add following lines (without spaces in the beginning):
    
-       127.0.1.100      example-provider.com
-       127.0.1.100      example.com
+        127.0.1.100      example-provider.com
+        127.0.1.100      example.com
 
-2. Run PROVIDER application:
+ 2. Run PROVIDER application:
 
-   cd <project_path>
-   ./script/server -b example-provider.com
+    cd <project_path>
+    ./script/server -b example-provider.com
 
-   This will run the server on http://example-provider.com:3000
+    This will run the server on http://example-provider.com:3000
 
-3. Run CONSUMER application:
+ 3. Run CONSUMER application:
 
-   cd <project_path>/demo_app
-   ./script/server -p 8000 -b example.com
+    cd <project_path>/demo_app
+    ./script/server -p 8000 -b example.com
    
-   This will run the server on http://example.com:8000
+    This will run the server on http://example.com:8000
 
-4. Open CONSUMER web site:
+ 4. Open CONSUMER web site:
 
-   http://example.com:8000/
+    http://example.com:8000/
    
-   Select a user and see result (e.g. http://example.com:3000/user/show/someuser)
+    Select a user and see result (e.g. http://example.com:3000/user/show/someuser)
    
-5. See 2 types of widgets in INLINE, IFRAME and WINDOW containers.
+ 5. See 2 types of widgets in INLINE, IFRAME and WINDOW containers.
+
+
+= SECURITY =
+
+All current containers are quite secure if hosting page does not contain user-entered content (such as markup
+or scripts). To avoid "main-in-the-middle" attach you should install and use SSL for all connections
+especially for SERVER-SERVER connections where SECRET_KEY and TOKEN are sent.
+
+Authentication token has small expiration time (15 minutes of inactivity) and useless after that.
+
+In modern browsers without known security holes IFRAME and WINDOW container is more secure that INLINE because
+its content is isolated from other content by cross-origin restrictions (content is located on other domain).
+However, this approach exposes TOKEN in widgets URLs (in opposite of INLINE where TOKEN is in response body)
+that cannot be traces.
+
+We don't recomment you to rely on IFRAME and WINDOW isolation in IE because it seems it may be bypassed.
+
+
+= KNOWN ISSUES =
+
+ * IFRAME container has invalid size in IE because jQuery incorrectly calculate its content size
+
+
+= IDEAS =
+
+There are few ideas that were not included in this release for some reasons:
+
+ * Fix known issues
+ * Use flXHR (http://flxhr.flensed.com) for browsers that do not support CORS (http://www.w3.org/TR/cors/) to
+   allow INLINE container for older browsers and IE.
+ * Use XDomainRequest for IE8+ (need client and server changes) to allow INLINE container for IE8+.
+ * Automatically select widget container (if not specified) according to browser features - to isolate end
+   users and developers from WOR internals.
+ * Use cross-frames messaging (window.postMessage) instead of IFRAME workaround
+   (https://developer.mozilla.org/en/DOM/window.postMessage).
+ * Minimize WOR Javascript files and concatenate them into single file to reduce load time.
+ * Implement CONSUMER SERVER code in PHP and Python
+ * Open windows in wizard for sensitive input (credit cards, etc.)
+ * Pack code as Rails plugin
+ * Change the code to work if other that jQuery frameworks are loaded (such as Prototype, MooTools, etc.)
+
+= Contribute =
+
+Please, feel free to contribute at http://github.com/itteco/widgets-on-rails
