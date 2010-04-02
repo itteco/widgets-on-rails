@@ -23,12 +23,9 @@
 * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 * ----------------------------------------------------------------------
 * 
-* Client part of VIEW component of WIDGET. Has no logic except view.
+* SAMPLE IMPLEMENTAION
 * 
-* Implements:
-*   Rendering TEMPLATE with provided data
-*   Showing rendered TEMPLATE as UI to end user
-*   Communicate with PROVIDER
+* Styles for WIDGETS and its CONTAINERS
 * 
 */
 
@@ -38,7 +35,7 @@ body.wor-body {
 }
 
 body.wor-body.wor_iframe {
-    width: 3000px;
+    width: 3000px; /* hack for IFRAME width and height calculation */
 }
 
 .wor_content {

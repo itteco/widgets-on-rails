@@ -148,7 +148,7 @@ WORWidget.prototype.drawAction = function(action) {
         }
         
         form.bind('submit', function(){return obj.on_submit();});
-        //form.attr('onsubmit', "alert(1245);return "+this.INSTANCE_NAME+".on_submit();");
+        // Try form.action or form.onSubmit attributes if bind doesn't work as expected
     }
     this.pushSize();
 }
@@ -165,7 +165,7 @@ WORWidget.prototype.pushSize = function() {
     
     if(this.get_disposition() == 'iframe') {
         var h = '#'+this.NUM+':'+this.CONTAINER.outerWidth()+':'+this.CONTAINER.outerHeight();
-        this.CONTAINER.append("<iframe src='"+this.ORIGIN+"/size_receiver.html"+h+"' width='1' height='1' style='display:none;'></irfame>");
+        this.CONTAINER.append("<iframe src='"+this.ORIGIN+"/size_receiver.html"+h+"' width='1' height='1' style='display:none;'></iframe>");
     }
     // nothing to do for DIV - size is proper
     // nothing to do for WINDOW - cannot change the size properly
